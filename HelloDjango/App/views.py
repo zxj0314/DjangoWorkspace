@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from App.models import Student
+from App.models import Student, Person
 
 
 def hello(request):
@@ -61,3 +61,48 @@ def delete(request):
     student = Student.objects.get(pk=6)
     student.delete()
     return HttpResponse("delete sutdent 3 Success")
+
+
+def addpersons(request):
+    for i in range(1, 100):
+        person = Person()
+        person.p_name = 'Tom%s' % i
+        person.p_age = i
+        person.p_sex = i % 2
+        person.save()
+    return HttpResponse("Add Person success.")
+
+
+def getpersons(request):
+    # persons = Person.objects.filter(p_age__lt=60).filter(p_age__gt=30)
+    # 排序
+    # persons = Person.objects.all().order_by('-id')  # 根据ID排序，-id代表倒序
+    persons = Person.objects.all().order_by('p_age')  # 根据
+
+    person_values = Person.objects.values()  # 返回字典数据的列表
+    print(type(person_values))
+    print(person_values)
+    for person_value in person_values:
+        print(person_value)
+
+    person_value_list = Person.objects.values_list()  # id+数据的元组数据列表
+    print("*" * 50)
+    print(type(person_value_list))
+    print(person_value_list)
+    context = {
+        "persons": persons
+    }
+    return render(request, 'get_persons.html', context=context)
+
+
+def addperson(request):
+    # person = Person.objects.create(p_name='Jack', p_age=38, p_sex=True)
+    # print(person.p_name)
+    person = Person.create("Jacny")
+    person.save()
+    return HttpResponse("add success")
+
+
+def getperson(request):
+    person = Person.objects.get(p_age=100)
+    return HttpResponse('获取成功')
